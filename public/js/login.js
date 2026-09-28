@@ -12,7 +12,7 @@ formLogin.addEventListener("submit", async function(event) {
         senha
         }
 
-        const resposta = await fetch("http://localhost:3000/usuarios/login", {
+        const resposta = await fetch(`${API_URL}/usuarios/login`, {
             method: "POST",
                 
             headers: {

@@ -12,7 +12,7 @@ async function enviarCodigo(event) {
     
     try{
         const response = await fetch(
-            "http://localhost:3000/usuarios/esqueci-senha",
+            `${API_URL}/usuarios/esqueci-senha`,
             {
                 "method":"POST",
                 "headers":{

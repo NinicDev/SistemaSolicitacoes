@@ -30,7 +30,7 @@ async function cadastrarUsuario(event) {
 
     try {
         const response = await fetch(
-            "http://localhost:3000/usuarios/cadastro",
+            `${API_URL}/usuarios/cadastro`,
             {
                 method: "POST",
                 headers: {

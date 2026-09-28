@@ -20,7 +20,7 @@ import {
     aplicarMascarasSolicitacao,
 } from "./formatadores.js";
 
-const API_URL = "http://localhost:3000";
+const API_URL = window.location.origin;
 
 const parametros = new URLSearchParams(window.location.search);
 const id = parametros.get("id");

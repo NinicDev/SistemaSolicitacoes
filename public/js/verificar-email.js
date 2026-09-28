@@ -30,7 +30,7 @@ async function verificarEmail(event) {
 
     try {
         const response = await fetch(
-            "http://localhost:3000/usuarios/verificar-email",
+            `${API_URL}/usuarios/verificar-email`,
             {
                 method: "POST",
                 headers: {
@@ -72,7 +72,7 @@ async function reenviarCodigo() {
 
     try{
         const response = await fetch(
-            "http://localhost:3000/usuarios/reenviar-codigo",
+            `${API_URL}/usuarios/reenviar-codigo`,
             {
                 method: "POST",
                 headers: {

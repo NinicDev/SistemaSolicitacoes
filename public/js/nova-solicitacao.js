@@ -11,7 +11,7 @@ import {
 } from "./formatadores.js";
 
 const token = localStorage.getItem("token");
-const API_URL = "http://localhost:3000";
+const API_URL = window.location.origin;
 
 async function verificarPermissao() {
 

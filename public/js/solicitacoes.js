@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = window.location.origin;
 const token = localStorage.getItem("token");
 const listaContainer = document.querySelector("#lista-container");
 const campoPesquisa = document.getElementById("pesquisa");

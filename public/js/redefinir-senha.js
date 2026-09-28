@@ -25,7 +25,7 @@ async function redefinirSenha(event) {
 
     try{
         const response = await fetch(
-            "http://localhost:3000/usuarios/redefinir-senha",
+            `${API_URL}/usuarios/redefinir-senha`,
             {
                 "method":"POST",
                 "headers":{
@@ -65,7 +65,7 @@ async function reenviarCodigoRecuperacao() {
 
     try{
         const response = await fetch(
-            "http://localhost:3000/usuarios/esqueci-senha",
+            `${API_URL}/usuarios/esqueci-senha`,
             {
                 method: "POST",
                 headers: {
