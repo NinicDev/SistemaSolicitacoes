@@ -1,5 +1,6 @@
 const formEmail = document.querySelector("#form-verificacao-email-senha")
 const mensagem = document.querySelector("#mensagem")
+const API_URL = window.location.origin;
 
 formEmail.addEventListener("submit", enviarCodigo);
 

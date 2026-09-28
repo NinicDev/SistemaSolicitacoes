@@ -13,6 +13,7 @@ const mensagem = document.querySelector("#mensagem")
 const botaoReenviar = document.querySelector("#reenviar-codigo")
 
 botaoReenviar.addEventListener("click", reenviarCodigoRecuperacao);
+const API_URL = window.location.origin;
 
 async function redefinirSenha(event) {
     event.preventDefault();

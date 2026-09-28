@@ -1,5 +1,6 @@
 const formCadastro = document.querySelector("#form-cadastro");
 const mensagem = document.querySelector("#mensagem");
+const API_URL = window.location.origin;
 
 formCadastro.addEventListener("submit", cadastrarUsuario);
 

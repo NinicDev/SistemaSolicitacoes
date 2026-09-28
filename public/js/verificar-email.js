@@ -1,4 +1,5 @@
 const email = sessionStorage.getItem("emailVerificacao");
+const API_URL = window.location.origin;
 
 if (!email) {
     window.location.href = "./cadastro.html";

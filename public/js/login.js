@@ -1,5 +1,6 @@
 const formLogin = document.querySelector("#form-login");
 const mensagem = document.querySelector("#mensagem");
+const API_URL = window.location.origin;
 
 formLogin.addEventListener("submit", async function(event) {
     event.preventDefault();
