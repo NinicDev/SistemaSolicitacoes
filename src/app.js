@@ -1,33 +1,53 @@
-// Importa o Express, responsável pela criação da API.
 const express = require("express");
 
-// Middleware que permite requisições vindas de outras origens,
-// como um frontend executando em outra porta.
 const cors = require("cors");
 
-// Importa as rotas relacionadas aos usuários.
 const usuarioRoutes = require("./routes/usuarioRoutes");
 
-// Importa as rotas relacionadas às solicitações.
 const solicitacoesRoutes = require("./routes/solicitacaoRoutes");
 
-// Cria a aplicação Express.
+const responsavelRoutes = require("./routes/responsavelRoutes");
+
+const tipoServicoRoutes = require("./routes/tipoServicoRoutes")
+
+const anexosRoutes = require("./routes/anexoRoutes")
+
 const app = express();
 
-// Permite que o backend receba requisições de outras origens.
 app.use(cors());
 
-// Permite que o Express interprete JSON enviado
-// no corpo das requisições.
 app.use(express.json());
 
-// Todas as rotas de usuário começam com /usuarios.
-// Exemplo: POST /usuarios/login
 app.use("/usuarios", usuarioRoutes);
 
-// Todas as rotas de solicitações começam com /solicitacoes.
-// Exemplo: GET /solicitacoes
 app.use("/solicitacoes", solicitacoesRoutes);
 
-// Exporta a aplicação para que ela possa ser iniciada no server.js.
+app.use("/responsaveis", responsavelRoutes);
+
+app.use("/tipos-servico", tipoServicoRoutes)
+
+app.use("/anexos", anexosRoutes)
+
+
+app.use((error, req, res, next) => {
+
+    if(error.code === "LIMIT_FILE_SIZE"){
+        return res.status(400).json({
+            mensagem: "Arquivo excede o limite de 5mb"
+        })
+    }
+
+    if (error.message === "Formato de arquivo não permitido") {
+        return res.status(400).json({
+            mensagem: "Formato de arquivo não permitido"
+        })
+    }
+
+    console.error("Erro interno da aplicação:", error);
+
+    return res.status(500).json({
+        mensagem: "Erro interno do servidor."
+    })
+})
+
 module.exports = app;

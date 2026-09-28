@@ -1,15 +1,10 @@
-// Importa o pool de conexões para realizar
-// as operações das solicitações no PostgreSQL.
 const pool = require("../../config/database");
+const fs = require("fs/promises");
 
-// Lista todas as solicitações cadastradas no sistema.
 async function listarSolicitacoes(req, res) {
 
     try {
 
-        // Além dos dados da solicitação, utiliza JOIN para
-        // retornar o nome do responsável e do tipo de serviço,
-        // em vez de retornar somente seus IDs.
         const resultado = await pool.query(
             `
             SELECT
@@ -36,15 +31,10 @@ async function listarSolicitacoes(req, res) {
     }
 }
 
-
-// Cria uma nova solicitação no banco de dados.
 async function criarSolicitacao(req, res) {
 
     try {
 
-        // Recupera os dados enviados pelo cliente.
-        // As validações principais já são realizadas
-        // anteriormente pelo middleware validarSolicitacao.
         const {
             nome,
             cpf,
@@ -64,10 +54,7 @@ async function criarSolicitacao(req, res) {
         } = req.body;
 
 
-        // Insere os dados da nova solicitação.
-        // Os placeholders ($1, $2...) mantêm os valores
-        // separados da instrução SQL e ajudam a prevenir SQL Injection.
-        await pool.query(
+        const resultado = await pool.query(
             `
             INSERT INTO solicitacoes (
                 nome,
@@ -91,6 +78,7 @@ async function criarSolicitacao(req, res) {
                 $6, $7, $8, $9, $10,
                 $11, $12, $13, $14, $15
             )
+            RETURNING id
             `,
             [
                 nome,
@@ -113,7 +101,8 @@ async function criarSolicitacao(req, res) {
 
 
         return res.status(201).json({
-            mensagem: "Solicitação criada com sucesso!"
+            mensagem: "Solicitação criada com sucesso!",
+            id: resultado.rows[0].id
         });
 
     } catch (error) {
@@ -127,43 +116,26 @@ async function criarSolicitacao(req, res) {
     }
 }
 
-// Busca uma única solicitação através do seu ID.
 async function buscarPorId(req, res) {
 
     try {
 
-        // O ID vem do parâmetro presente na URL.
-        // Exemplo: /solicitacoes/5
         const { id } = req.params;
 
-        // Busca a solicitação e também retorna os nomes
-        // relacionados ao responsável e ao tipo de serviço.
         const resultado = await pool.query(
             `
-            SELECT
-                s.*,
-                r.nome AS responsavel,
-                ts.nome AS tipo_servico
-            FROM solicitacoes s
-            LEFT JOIN responsaveis r
-                ON s.responsavel_id = r.id
-            JOIN tipos_servico ts
-                ON s.tipo_servico_id = ts.id
-            WHERE s.id = $1
+            SELECT * from view_solicitacoes_registro
+            WHERE id = $1
             `,
             [id]
         );
 
-        // Se nenhuma linha foi retornada,
-        // não existe solicitação com esse ID.
         if (resultado.rows.length === 0) {
             return res.status(404).json({
                 mensagem: "Solicitação não encontrada"
             });
         }
 
-        // Como buscamos apenas um ID,
-        // retornamos somente o primeiro registro.
         return res.status(200).json(resultado.rows[0]);
 
     } catch (error) {
@@ -174,15 +146,12 @@ async function buscarPorId(req, res) {
     }
 }
 
-// Atualiza os dados de uma solicitação existente.
 async function atualizarSolicitacao(req, res) {
 
     try {
 
-        // ID da solicitação que será atualizada.
         const { id } = req.params;
 
-        // Novos valores enviados pelo cliente.
         const {
             nome,
             cpf,
@@ -202,8 +171,6 @@ async function atualizarSolicitacao(req, res) {
             status
         } = req.body;
 
-        // Atualiza todos os campos da solicitação
-        // correspondente ao ID recebido na URL.
         const resultado = await pool.query(
             `
             UPDATE solicitacoes
@@ -247,8 +214,6 @@ async function atualizarSolicitacao(req, res) {
             ]
         );
 
-        // rowCount informa quantas linhas foram afetadas.
-        // Se nenhuma linha foi atualizada, o ID não existe.
         if (resultado.rowCount === 0) {
             return res.status(404).json({
                 mensagem: "Solicitação não encontrada"
@@ -260,6 +225,7 @@ async function atualizarSolicitacao(req, res) {
         });
 
     } catch (error) {
+         console.error("ERRO AO ATUALIZAR SOLICITAÇÃO:", error);
 
         return res.status(500).json({
             mensagem: "Erro ao atualizar solicitação"
@@ -267,29 +233,59 @@ async function atualizarSolicitacao(req, res) {
     }
 }
 
-// Exclui uma solicitação através do seu ID.
 async function excluirSolicitacao(req, res) {
+
+    const { id } = req.params;
+
+    let client;
 
     try {
 
-        const { id } = req.params;
+        client = await pool.connect();
 
-        // Exclui somente o registro correspondente
-        // ao ID recebido na URL.
-        const resultado = await pool.query(
+        await client.query("BEGIN");
+
+        // Guarda os caminhos antes do DELETE; os registros de anexos caem por CASCADE.
+        const resultadoAnexos = await client.query(
             `
-            DELETE FROM solicitacoes
-            WHERE id = $1
+            SELECT caminho_arquivo
+            FROM anexos
+            WHERE id_solicitacao = $1
             `,
             [id]
         );
 
-        // Se nenhuma linha foi removida,
-        // não existe solicitação com o ID informado.
+        const resultado = await client.query(
+            `
+            DELETE FROM solicitacoes
+            WHERE id = $1
+            RETURNING id
+            `,
+            [id]
+        );
+
         if (resultado.rowCount === 0) {
+            await client.query("ROLLBACK");
+
             return res.status(404).json({
                 mensagem: "Solicitação não encontrada"
             });
+        }
+
+        await client.query("COMMIT");
+
+        // Arquivos físicos só são removidos depois que a transação do banco foi confirmada.
+        for (const anexo of resultadoAnexos.rows) {
+            try {
+                await fs.unlink(anexo.caminho_arquivo);
+            } catch (erroArquivo) {
+                if (erroArquivo.code !== "ENOENT") {
+                    console.error(
+                        "Solicitação excluída, mas um arquivo físico não pôde ser removido:",
+                        erroArquivo
+                    );
+                }
+            }
         }
 
         return res.status(200).json({
@@ -298,14 +294,25 @@ async function excluirSolicitacao(req, res) {
 
     } catch (error) {
 
+        if (client) {
+            try {
+                await client.query("ROLLBACK");
+            } catch {}
+        }
+
+        console.error("Erro ao excluir solicitação:", error);
+
         return res.status(500).json({
             mensagem: "Erro ao excluir solicitação"
         });
+
+    } finally {
+        if (client) {
+            client.release();
+        }
     }
 }
 
-// Exporta os controllers para que possam
-// ser utilizados pelas rotas de solicitações.
 module.exports = {
     listarSolicitacoes,
     criarSolicitacao,

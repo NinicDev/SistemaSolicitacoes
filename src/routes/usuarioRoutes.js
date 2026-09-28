@@ -1,36 +1,63 @@
-// Importa o Express para criação das rotas.
 const express = require("express");
 
-// Middleware responsável por verificar o token JWT
-// antes de permitir acesso a rotas protegidas.
 const autenticarToken = require("../middlewares/authMiddleware");
 
-// Importa os controllers responsáveis pelo
-// cadastro e login dos usuários.
 const {
     cadastrarUsuario,
-    loginUsuario
+    loginUsuario,
+    verificarEmail,
+    reenviarCodigo,
+    solicitarRecuperacaoSenha,
+    redefinirSenha,
+    logoutUsuario,
+    obterUsuarioAtual,
+    listarUsuarios,
+    alterarNivelAcesso,
+    listarUsuariosDisponiveisResponsavel
 } = require("../controllers/usuarioController");
 
-// Cria um roteador do Express.
+const autorizarNiveis = require("../middlewares/autorizarNiveis");
+
 const router = express.Router();
 
-// Cadastra um novo usuário.
-// Rota final: POST /usuarios/cadastro
+router.post("/esqueci-senha", solicitarRecuperacaoSenha);
+
+router.post("/redefinir-senha", redefinirSenha);
+
+router.post("/logout", autenticarToken, logoutUsuario);
 router.post("/cadastro", cadastrarUsuario);
 
-// Realiza o login e retorna um token JWT.
-// Rota final: POST /usuarios/login
+router.post("/verificar-email", verificarEmail);
+
+router.post("/reenviar-codigo", reenviarCodigo);
+
 router.post("/login", loginUsuario);
 
-// Rota criada para testar o funcionamento
-// do middleware de autenticação.
-router.get("/protegida", autenticarToken, (req, res) => {
-    res.json({
-        mensagem: "Você acessou uma rota protegida!"
-    });
-});
+router.get(
+    "/me",
+    autenticarToken,
+    obterUsuarioAtual
+);
 
+router.get(
+    "/",
+    autenticarToken,
+    autorizarNiveis("ADMIN"),
+    listarUsuarios
+);
 
-// Exporta as rotas para serem utilizadas em app.js.
+router.get(
+    "/disponiveis-responsavel",
+    autenticarToken,
+    autorizarNiveis("ADMIN"),
+    listarUsuariosDisponiveisResponsavel
+);
+
+router.patch(
+    "/:id/nivel-acesso",
+    autenticarToken,
+    autorizarNiveis("ADMIN"),
+    alterarNivelAcesso
+);
+
 module.exports = router;

@@ -1,60 +1,78 @@
-// Biblioteca utilizada para criar e validar tokens JWT.
 const jwt = require("jsonwebtoken");
 
-// Middleware responsável por verificar se a requisição
-// possui um token JWT válido antes de continuar.
-function autenticarToken(req, res, next) {
+const pool = require("../../config/database");
 
-    // Recupera o conteúdo do header Authorization.
-    // O formato esperado é:
-    // Authorization: Bearer TOKEN
+async function autenticarToken(req, res, next) {
+
     const authorization = req.headers.authorization;
 
-    // Caso nenhum header Authorization tenha sido enviado,
-    // o acesso à rota protegida é bloqueado.
     if (!authorization) {
         return res.status(401).json({
             mensagem: "Token não fornecido"
         });
     }
 
-    // Divide o header em duas partes:
-    // type  -> "Bearer"
-    // token -> token JWT enviado pelo usuário
     const [type, token] = authorization.split(" ");
 
-    // Verifica se o formato recebido corresponde
-    // ao padrão Bearer Token.
     if (type !== "Bearer" || !token) {
         return res.status(401).json({
             mensagem: "Formato de token inválido."
         });
     }
 
-    try {
-
-        // Verifica a assinatura e a validade do token
-        // utilizando a chave secreta armazenada no .env.
+    try{
         const dadosUsuario = jwt.verify(
             token,
             process.env.JWT_SECRET
         );
 
+        // O logout revoga o JWT pelo jti até a expiração original do token.
+        const resultadoToken = await pool.query(
+            `
+            SELECT id from tokens_invalidados 
+            WHERE jti_id = $1
+            LIMIT 1
+            `, [dadosUsuario.jti]);
 
-        // Armazena os dados presentes no token dentro
-        // da requisição para que possam ser utilizados
-        // nas próximas etapas, se necessário.
-        req.usuario = dadosUsuario;
+        if(resultadoToken.rows.length > 0){
+            return res.status(401).json({
+                mensagem: "Token inválido"
+            })
+        }
+
+        // O nível é lido do banco para mudanças de permissão valerem sem novo login.
+        const resultadoUsuario = await pool.query(
+            `
+            SELECT
+                id,
+                usuario,
+                nivel_acesso
+            FROM usuarios
+            WHERE id = $1
+            LIMIT 1
+            `,
+            [dadosUsuario.id]
+        );
+
+        if (resultadoUsuario.rows.length === 0) {
+            return res.status(401).json({
+                mensagem: "Usuário não encontrado."
+            });
+        }
+
+        const usuarioAtual = resultadoUsuario.rows[0];
+        // Mantém os claims do JWT (incluindo jti/exp) e sobrescreve dados mutáveis.
+        req.usuario = {
+            ...dadosUsuario,
+            usuario: usuarioAtual.usuario,
+            nivel_acesso: usuarioAtual.nivel_acesso
+        };
 
 
-        // Libera a requisição para o próximo middleware
-        // ou controller da rota.
         next();
 
-    } catch (error) {
+    }catch(error){
 
-        // jwt.verify lança um erro caso o token seja inválido,
-        // tenha sido adulterado ou esteja expirado.
         return res.status(401).json({
             mensagem: "Token inválido ou expirado."
         });
