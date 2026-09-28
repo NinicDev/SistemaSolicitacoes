@@ -1,14 +1,8 @@
-// Importa o Pool da biblioteca pg.
-// O Pool gerencia as conexões entre a aplicação e o PostgreSQL.
 const { Pool } = require("pg");
 
-// Carrega as variáveis definidas no arquivo .env
-// para dentro de process.env.
 require("dotenv").config();
 
-// Cria o pool de conexões com o banco de dados.
-// Os dados de acesso ficam no .env para evitar
-// deixar informações sensíveis diretamente no código.
+// Credenciais ficam fora do código e são fornecidas pelas variáveis de ambiente.
 const pool = new Pool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -17,6 +11,4 @@ const pool = new Pool({
     database: process.env.DB_NAME
 });
 
-// Exporta o pool para que controllers e middlewares
-// possam realizar consultas ao banco.
 module.exports = pool;
