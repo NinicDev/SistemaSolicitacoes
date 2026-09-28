@@ -1,0 +1,143 @@
+@import url("./base.css");
+
+body {
+    padding: 34px 20px 56px;
+}
+
+.voltar {
+    max-width: 1120px;
+    margin: 0 auto 14px;
+}
+
+.card {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 34px;
+    border: 1px solid rgba(220, 227, 236, 0.95);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: var(--shadow-md);
+}
+
+.card h2 {
+    margin: 0 0 28px;
+    font-size: clamp(26px, 4vw, 34px);
+}
+
+#solicitacao-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.linha,
+.linha-3 {
+    display: grid;
+    gap: 18px;
+}
+
+.linha {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.linha-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.campo {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.campo textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.acoes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 4px;
+}
+
+#editar {
+    background: var(--primary);
+}
+
+#excluir {
+    background: var(--danger);
+}
+
+#excluir:hover:not(:disabled) {
+    background: var(--danger-hover);
+}
+
+#imprimir,
+#cancelar {
+    background: #fff;
+    color: #344054;
+    border-color: var(--border);
+}
+
+#imprimir:hover:not(:disabled),
+#cancelar:hover:not(:disabled) {
+    background: var(--surface-soft);
+    color: #101828;
+}
+
+#mensagem-solicitacao {
+    margin-top: 24px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-soft);
+    font-size: 14px;
+}
+
+@media (max-width: 820px) {
+    body {
+        padding: 24px 14px 40px;
+    }
+
+    .card {
+        padding: 24px;
+    }
+
+    .linha,
+    .linha-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .acoes {
+        flex-direction: column;
+    }
+
+    .acoes button {
+        width: 100%;
+    }
+}
+
+@media print {
+    body {
+        padding: 0;
+        background: #fff;
+    }
+
+    .voltar,
+    .acoes,
+    .area-anexos,
+    #mensagem-solicitacao {
+        display: none !important;
+    }
+
+    .card {
+        max-width: none;
+        padding: 0;
+        border: 0;
+        box-shadow: none;
+    }
+}

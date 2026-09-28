@@ -1,0 +1,151 @@
+.area-anexos {
+    margin-top: 6px;
+    padding: 20px;
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    background: #fbfcfe;
+}
+
+#anexar-img {
+    margin-bottom: 4px;
+    background: #fff;
+    color: #344054;
+    border-color: var(--border);
+}
+
+#anexar-img:hover:not(:disabled) {
+    background: var(--primary-soft);
+    color: var(--primary-hover);
+    border-color: #bfdbfe;
+}
+
+#lista-anexos,
+#anexos-pendentes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.anexo-edicao,
+.anexo-pendente {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+.anexo-edicao img,
+.anexo-pendente img {
+    display: block;
+    width: 150px;
+    height: 108px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.anexo-edicao button,
+.anexo-pendente button {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 28px;
+    min-height: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.82);
+    color: #fff;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.22);
+}
+
+.anexo-edicao button:hover:not(:disabled),
+.anexo-pendente button:hover:not(:disabled) {
+    background: var(--danger);
+}
+
+.anexo-visualizacao {
+    width: 100%;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.anexo-visualizacao img {
+    display: block;
+    max-width: 100%;
+    width: auto;
+    max-height: 520px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    object-fit: contain;
+    cursor: zoom-in;
+    box-shadow: var(--shadow-sm);
+}
+
+.titulo-pendentes {
+    width: 100%;
+    margin: 3px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.modal-imagem {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    padding: 28px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.86);
+    backdrop-filter: blur(5px);
+}
+
+.modal-imagem img {
+    max-width: min(1100px, 92vw);
+    max-height: 86vh;
+    border-radius: var(--radius-md);
+    object-fit: contain;
+    box-shadow: var(--shadow-lg);
+}
+
+#fechar-modal {
+    position: fixed;
+    top: 20px;
+    right: 28px;
+    color: #fff;
+    font-size: 42px;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+}
+
+@media (max-width: 640px) {
+    .area-anexos {
+        padding: 16px;
+    }
+
+    .anexo-edicao img,
+    .anexo-pendente img {
+        width: 132px;
+        height: 96px;
+    }
+
+    .modal-imagem {
+        padding: 14px;
+    }
+}
+
+@media print {
+    .area-anexos,
+    .modal-imagem {
+        display: none !important;
+    }
+}

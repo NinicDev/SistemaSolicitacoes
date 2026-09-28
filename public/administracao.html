@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Administração</title>
+
+    <link
+        rel="stylesheet"
+        href="./css/administracao.css"
+    >
+</head>
+
+<body>
+
+    <main class="container">
+
+        <header class="cabecalho">
+
+            <div>
+                <h1>Administração</h1>
+
+                <p>
+                    Gerencie usuários e responsáveis do sistema.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                id="voltar"
+            >
+                Voltar ao início
+            </button>
+
+        </header>
+
+
+        <p
+            id="mensagem"
+            class="mensagem"
+        ></p>
+
+
+        <!-- =========================
+             USUÁRIOS
+        ========================== -->
+
+        <section class="card">
+
+            <div class="titulo-secao">
+
+                <div>
+                    <h2>Usuários</h2>
+
+                    <p>
+                        Visualize os usuários cadastrados e altere
+                        seus níveis de acesso.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="atualizar-usuarios"
+                >
+                    Atualizar
+                </button>
+
+            </div>
+
+
+            <div
+                id="usuarios-container"
+                class="tabela-container"
+            >
+                <p>Carregando usuários...</p>
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             RESPONSÁVEIS
+        ========================== -->
+
+        <section class="card">
+
+            <div class="titulo-secao">
+
+                <div>
+                    <h2>Responsáveis</h2>
+
+                    <p>
+                        Cadastre usuários como responsáveis
+                        e controle quem está ativo.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="atualizar-responsaveis"
+                >
+                    Atualizar
+                </button>
+
+            </div>
+
+
+            <!-- CADASTRAR RESPONSÁVEL -->
+
+            <div class="cadastro-responsavel">
+
+                <h3>Cadastrar responsável</h3>
+
+                <div class="linha-cadastro">
+
+                    <select id="usuario-responsavel">
+
+                        <option value="">
+                            Selecione um usuário
+                        </option>
+
+                    </select>
+
+                    <button
+                        type="button"
+                        id="cadastrar-responsavel"
+                    >
+                        Cadastrar responsável
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- LISTA -->
+
+            <div
+                id="responsaveis-container"
+                class="tabela-container"
+            >
+                <p>Carregando responsáveis...</p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="./js/administracao.js"></script>
+
+</body>
+
+</html>

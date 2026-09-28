@@ -1,0 +1,129 @@
+@import url("./base.css");
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+body::before {
+    content: "Painel principal";
+    width: min(100%, 720px);
+    margin-bottom: 10px;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+body > h1,
+body > p,
+body > button:not(#sair) {
+    width: min(100%, 720px);
+}
+
+body > h1 {
+    margin: 0;
+    padding: 32px 32px 0;
+    border: 1px solid var(--border);
+    border-bottom: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: #fff;
+    font-size: clamp(30px, 5vw, 42px);
+    box-shadow: var(--shadow-md);
+}
+
+#usuario-logado {
+    margin: 0 0 22px;
+    padding: 10px 32px 28px;
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    background: #fff;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 650;
+    box-shadow: var(--shadow-md);
+}
+
+body > button:not(#sair) {
+    margin-top: 10px;
+    min-height: 56px;
+    padding: 14px 20px;
+    text-align: left;
+    border-color: var(--border);
+    background: #fff;
+    color: #243047;
+    box-shadow: var(--shadow-sm);
+}
+
+body > button:not(#sair)::after {
+    content: "→";
+    float: right;
+    color: var(--primary);
+    font-size: 18px;
+}
+
+body > button:not(#sair):hover:not(:disabled) {
+    border-color: #bfdbfe;
+    background: var(--primary-soft);
+    color: var(--primary-hover);
+}
+
+#newButton {
+    border-left: 4px solid var(--primary);
+}
+
+#adminButton {
+    border-left: 4px solid #7c3aed;
+}
+
+#listButton {
+    border-left: 4px solid #0891b2;
+}
+
+#sair {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    min-height: 38px;
+    padding: 8px 14px;
+    background: transparent;
+    color: #475467;
+    border-color: var(--border);
+    box-shadow: none;
+}
+
+#sair:hover:not(:disabled) {
+    background: #fff;
+    color: var(--danger);
+    border-color: #fecaca;
+}
+
+#mensagem {
+    margin-top: 18px;
+    font-size: 14px;
+}
+
+@media (max-width: 640px) {
+    body {
+        justify-content: flex-start;
+        padding: 86px 16px 28px;
+    }
+
+    #sair {
+        top: 16px;
+        right: 16px;
+    }
+
+    body > h1 {
+        padding: 24px 22px 0;
+    }
+
+    #usuario-logado {
+        padding: 10px 22px 24px;
+    }
+}

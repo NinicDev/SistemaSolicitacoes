@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitações</title>
+    <link rel="stylesheet" href="./css/solicitacoes.css">
+</head>
+<body>
+   <section class="card">
+        <h2>Lista de Solicitações</h2>
+
+        <button id="listar">Listar / Atualizar listagem</button>
+        <button type="button" id="excluir-selecionadas" hidden>
+            Excluir selecionadas
+        </button>
+        <input type="text" id="pesquisa" placeholder="Pesquisar por nome...">
+        <button type="button" id="imprimir-selecionadas">
+            Imprimir selecionadas
+        </button>
+        <div id="lista-container">
+            <p>Nenhuma solicitação carregada.</p>
+        </div>
+        
+    </section>
+    
+    <div id="modal-anexos" class="modal-anexos">
+
+        <div class="modal-anexos-conteudo">
+
+            <button
+                type="button"
+                id="fechar-modal-anexos"
+            >
+                X
+            </button>
+
+            <h2>Imagens da solicitação</h2>
+
+            <div id="imagens-solicitacao"></div>
+
+        </div>
+
+    </div>
+
+    
+    <script src="./js/solicitacoes.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+@import url("./base.css");
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 36px 20px;
+}
+
+body::before {
+    content: "Sistema de Solicitações";
+    display: block;
+    width: min(100%, 430px);
+    margin-bottom: 10px;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+body > h1,
+body > p,
+body > form,
+body > a {
+    width: min(100%, 430px);
+}
+
+body > h1 {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 5vw, 38px);
+}
+
+body > h1 + p:not(#mensagem) {
+    margin: 0 0 22px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 18px 0 16px;
+    padding: 28px;
+    border: 1px solid rgba(220, 227, 236, 0.9);
+    border-radius: var(--radius-lg);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--shadow-lg);
+}
+
+form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+form button[type="submit"] {
+    margin-top: 4px;
+}
+
+form button[type="button"] {
+    background: #fff;
+    color: #344054;
+    border-color: var(--border);
+}
+
+form button[type="button"]:hover:not(:disabled) {
+    background: var(--surface-soft);
+    color: #101828;
+}
+
+body > a {
+    margin-top: 8px;
+    padding: 4px 2px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+body > a:hover {
+    text-decoration: underline;
+}
+
+#mensagem {
+    margin: 14px 0 0;
+    padding: 0 2px;
+    font-size: 14px;
+}
+
+#codigo {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 750;
+    letter-spacing: 0.32em;
+}
+
+#form-verificacao button,
+#form-redefinir-senha button {
+    width: 100%;
+}
+
+@media (max-width: 520px) {
+    body {
+        justify-content: flex-start;
+        padding: 28px 16px;
+    }
+
+    form {
+        padding: 22px;
+    }
+}
