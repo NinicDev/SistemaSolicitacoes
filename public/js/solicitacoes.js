@@ -2,10 +2,23 @@ const API_URL = window.location.origin;
 const token = localStorage.getItem("token");
 const listaContainer = document.querySelector("#lista-container");
 const campoPesquisa = document.getElementById("pesquisa");
+const filtroStatus = document.getElementById("filtro-status");
+const filtroPrioridade = document.getElementById("filtro-prioridade");
+const filtroResponsavel = document.getElementById("filtro-responsavel");
+const filtroTipoServico = document.getElementById("filtro-tipo-servico");
+const botaoLimparFiltros = document.getElementById("limpar-filtros");
 const botaoExcluirSelecionadas = document.getElementById("excluir-selecionadas");
 const botaoImprimirSelecionadas = document.getElementById("imprimir-selecionadas");
+
 let solicitacoes = [];
 let nivelAcesso = null;
+
+let paginaAtual = 1;
+let totalPaginas = 1;
+let totalSolicitacoes = 0;
+const limitePorPagina = 20;
+
+let timerPesquisa = null;
 
 if (!token) {
     window.location.href = "./login.html";
@@ -13,7 +26,7 @@ if (!token) {
 
 document
     .querySelector("#listar")
-    .addEventListener("click", listarSolicitacoes);
+    .addEventListener("click", () => {listarSolicitacoes(1);});
 
 async function lerResposta(response) {
     try {
@@ -24,6 +37,30 @@ async function lerResposta(response) {
         };
     }
 }
+
+filtroStatus.addEventListener(
+    "change", function() {
+        listarSolicitacoes(1);
+    }
+);
+
+filtroPrioridade.addEventListener(
+    "change", function() {
+        listarSolicitacoes(1);
+    }
+);
+
+filtroResponsavel.addEventListener(
+    "change", function() {
+        listarSolicitacoes(1);
+    }
+);
+
+filtroTipoServico.addEventListener(
+    "change", function() {
+        listarSolicitacoes(1);
+    }
+);
 
 async function obterUsuarioAtual() {
     try {
@@ -65,37 +102,88 @@ function configurarPermissoes() {
         nivelAcesso !== "ADMIN";
 }
 
-async function listarSolicitacoes() {
+async function listarSolicitacoes(pagina = 1) {
+
     try {
+        const parametros = new URLSearchParams();
+
+        parametros.set("page", pagina);
+        parametros.set("limit", limitePorPagina);
+
+        const busca = campoPesquisa.value.trim();
+
+        if (busca) {
+            parametros.set("busca", busca);
+        }
+
+        const status = filtroStatus.value;
+        const prioridade = filtroPrioridade.value;
+        const responsavelId = filtroResponsavel.value;
+        const tipoServicoId = filtroTipoServico.value;
+
+        if (status) {
+            parametros.set("status", status);
+        }
+
+        if (prioridade) {
+            parametros.set("prioridade", prioridade);
+        }
+
+        if (responsavelId) {
+            parametros.set("responsavel_id", responsavelId);
+        }
+
+        if (tipoServicoId){
+            parametros.set("tipo_servico_id", tipoServicoId);
+        }
+
         const response = await fetch(
-                `${API_URL}/solicitacoes`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${token}`
-                        }
-                    }
-            );
+            `${API_URL}/solicitacoes?${parametros.toString()}`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
 
         const dados = await lerResposta(response);
 
-        if(response.status === 401){
-            localStorage.removeItem("token")
+        if (response.status === 401) {
+            localStorage.removeItem("token");
+
             window.location.href = "./login.html";
             return;
         }
 
-        solicitacoes =
-                Array.isArray(dados)
-                    ? dados
-                    : dados.solicitacoes ||
-                      dados.dados ||
-                    [];
-                renderizarLista(solicitacoes);
-        
-    }catch(erro){
-        console.error("Erro na listagem:", erro);
-        listaContainer.innerHTML ="<p>Não foi possível conectar ao servidor.</p>";
+        if (!response.ok) {
+            listaContainer.innerHTML = `
+                <p>
+                    ${escaparHTML(
+                        dados.mensagem ||
+                        "Erro ao listar solicitações."
+                    )}
+                </p>
+            `;
+            return;
+        }
+
+        solicitacoes = dados.solicitacoes || [];
+        paginaAtual = dados.pagina;
+        totalPaginas = dados.totalPaginas;
+        totalSolicitacoes = dados.total;
+
+        renderizarLista(solicitacoes);
+
+    } catch (erro) {
+
+        console.error(
+            "Erro na listagem:",
+            erro
+        );
+
+        listaContainer.innerHTML =
+            "<p>Não foi possível conectar ao servidor.</p>";
     }
 }
 
@@ -149,7 +237,6 @@ function renderizarLista(lista) {
         return;
     }
 
-
     const linhas = lista.map(solicitacao => `
         <tr>
             <td><input type="checkbox" class="selecionar-solicitacao" value="${Number(solicitacao.id)}"></td>
@@ -188,10 +275,13 @@ function renderizarLista(lista) {
 
     listaContainer.innerHTML = `
         <table>
-           <thead>
+            <thead>
                 <tr>
                     <th>
-                        <input type="checkbox" id="selecionar-todos">
+                        <input
+                            type="checkbox"
+                            id="selecionar-todos"
+                        >
                     </th>
                     <th>ID</th>
                     <th>Nome</th>
@@ -202,10 +292,65 @@ function renderizarLista(lista) {
                     <th>Ação</th>
                 </tr>
             </thead>
+
             <tbody>
                 ${linhas}
             </tbody>
-        </table>`;
+        </table>
+
+        <div class="paginacao">
+
+            <button
+                type="button"
+                id="pagina-anterior"
+                ${paginaAtual <= 1 ? "disabled" : ""}
+            >
+                Anterior
+            </button>
+
+            <span>
+                Página ${paginaAtual} de ${totalPaginas}
+                — ${totalSolicitacoes} solicitação(ões)
+            </span>
+
+            <button
+                type="button"
+                id="proxima-pagina"
+                ${
+                    paginaAtual >= totalPaginas
+                        ? "disabled"
+                        : ""
+                }
+            >
+                Próxima
+            </button>
+
+        </div>
+    `;
+
+        const botaoAnterior = document.getElementById("pagina-anterior");
+
+        const botaoProxima = document.getElementById("proxima-pagina");
+
+        botaoAnterior.addEventListener("click", function() {
+                if (paginaAtual > 1) {
+
+                    listarSolicitacoes(
+                        paginaAtual - 1
+                    );
+                }
+            }
+        );
+
+        botaoProxima.addEventListener("click", function() {
+                if (paginaAtual < totalPaginas) {
+
+                    listarSolicitacoes(
+                        paginaAtual + 1
+                    );
+                }
+            }
+        );
 
     const selecionarTodos = document.getElementById("selecionar-todos");
     const checkboxes = document.querySelectorAll(".selecionar-solicitacao");
@@ -417,22 +562,20 @@ botaoExcluirSelecionadas.addEventListener("click", async function() {
     }
 });
 
-campoPesquisa.addEventListener("input", function() {
-    const texto = campoPesquisa.value
-        .toLowerCase()
-        .trim();
-    const filtradas = solicitacoes.filter(solicitacao => {
-        return (
-            String(solicitacao.id).includes(texto) ||
-            solicitacao.nome?.toLowerCase().includes(texto) ||
-            solicitacao.tipo_servico?.toLowerCase().includes(texto) ||
-            solicitacao.responsavel?.toLowerCase().includes(texto) ||
-            solicitacao.status?.toLowerCase().includes(texto) ||
-            solicitacao.prioridade?.toLowerCase().includes(texto)
+campoPesquisa.addEventListener(
+    "input",
+    function() {
+
+        clearTimeout(timerPesquisa);
+
+        timerPesquisa = setTimeout(
+            function() {
+                listarSolicitacoes(1);
+            },
+            400
         );
-    });
-    renderizarLista(filtradas);
-});
+    }
+);
 
 botaoImprimirSelecionadas.addEventListener("click", async function() {
 
@@ -478,6 +621,129 @@ botaoImprimirSelecionadas.addEventListener("click", async function() {
 
 });
 
+async function carregarResponsaveis() {
+
+    try {
+        const response = await fetch(
+            `${API_URL}/responsaveis`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        const dados = await lerResposta(response);
+
+        if (response.status === 401) {
+            localStorage.removeItem("token");
+
+            window.location.href = "./login.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                dados.mensagem || "Erro ao carregar responsáveis."
+            );
+        }
+
+        filtroResponsavel.innerHTML = `
+            <option value="">
+                Todos os responsáveis
+            </option>
+        `;
+
+        dados.forEach(responsavel => {
+
+            const option = document.createElement("option");
+
+            option.value = responsavel.id;
+
+            option.textContent = responsavel.nome;
+
+            filtroResponsavel.appendChild(option);
+        });
+
+    }catch(erro){
+
+        console.error(
+            "Erro ao carregar responsáveis:", erro
+        );
+    }
+}
+
+async function carregarTiposServico() {
+
+    try {
+        const response = await fetch(
+            `${API_URL}/tipos-servico`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        const dados = await lerResposta(response);
+
+        if (response.status === 401) {
+            localStorage.removeItem("token");
+
+            window.location.href = "./login.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                dados.mensagem || "Erro ao carregar tipos de serviço."
+            );
+        }
+
+        filtroTipoServico.innerHTML = `
+            <option value="">
+                Todos os tipos de serviço
+            </option>
+        `;
+
+        dados.forEach(tipo => {
+
+            const option = document.createElement("option");
+
+            option.value = tipo.id;
+
+            option.textContent = tipo.nome;
+
+            filtroTipoServico.appendChild(option);
+        });
+
+    }catch(erro){
+        console.error(
+            "Erro ao carregar tipos de serviço:", erro
+        );
+    }
+}
+
+botaoLimparFiltros.addEventListener("click", function() {
+
+        campoPesquisa.value = "";
+
+        filtroStatus.value = "";
+
+        filtroPrioridade.value = "";
+
+        filtroResponsavel.value = "";
+
+        filtroTipoServico.value = "";
+
+        clearTimeout(timerPesquisa);
+
+        listarSolicitacoes(1);
+    }
+);
+
 async function iniciarPagina() {
 
     const usuario = await obterUsuarioAtual();
@@ -490,7 +756,12 @@ async function iniciarPagina() {
 
     configurarPermissoes();
 
-    await listarSolicitacoes();
+    await Promise.all([
+        carregarResponsaveis(),
+        carregarTiposServico()
+    ]);
+
+    await listarSolicitacoes(1);
 }
 
 iniciarPagina();

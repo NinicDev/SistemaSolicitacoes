@@ -4,9 +4,154 @@ const fs = require("fs/promises");
 async function listarSolicitacoes(req, res) {
 
     try {
+        const {
+            busca,
+            status,
+            prioridade,
+            responsavel_id,
+            tipo_servico_id,
+            page = "1",
+            limit = "20"
+        } = req.query;
 
-        const resultado = await pool.query(
-            `
+        const pagina = Number(page);
+        const limite = Number(limit);
+
+        if(!Number.isInteger(pagina) || pagina <= 0){
+            return res.status(400).json({
+                mensagem: "Página inválida."
+            });
+        }
+
+        if(!Number.isInteger(limite) || limite <= 0 || limite > 100) {
+            return res.status(400).json({
+                mensagem: "Limite inválido."
+            });
+        }
+
+        const STATUS_VALIDOS = [
+            "ABERTA",
+            "EM_ANDAMENTO",
+            "CONCLUIDA",
+            "CANCELADA"
+        ];
+
+        const PRIORIDADES_VALIDAS = [
+            "BAIXO",
+            "MEDIO",
+            "ALTO"
+        ];
+
+        if(status && !STATUS_VALIDOS.includes(status)){
+            return res.status(400).json({
+                mensagem: "Status inválido."
+            });
+        }
+
+        if(prioridade && !PRIORIDADES_VALIDAS.includes(prioridade)){
+            return res.status(400).json({
+                mensagem: "Prioridade inválida."
+            });
+        }
+
+        if(responsavel_id && (!Number.isInteger(Number(responsavel_id)) || Number(responsavel_id) <= 0)) {
+            return res.status(400).json({
+                mensagem: "Responsável inválido."
+            });
+        }
+
+        if(tipo_servico_id && (!Number.isInteger(Number(tipo_servico_id)) ||Number(tipo_servico_id) <= 0)){
+            return res.status(400).json({
+                mensagem: "Tipo de serviço inválido."
+            });
+        }
+
+        const offset = (pagina - 1) * limite;
+
+        const condicoes = [];
+        const valores = [];
+
+        if (busca?.trim()) {
+
+            const buscaLimpa = busca.trim();
+
+            const condicoesBusca = [];
+
+            valores.push(`%${buscaLimpa}%`);
+
+            const indiceNome = valores.length;
+
+            condicoesBusca.push(
+                `s.nome ILIKE $${indiceNome}`
+            );
+
+            const cpfBusca = buscaLimpa.replace(/\D/g, "");
+
+            if (cpfBusca){
+
+                valores.push(`%${cpfBusca}%`);
+
+                const indiceCpf = valores.length;
+
+                condicoesBusca.push(`s.cpf LIKE $${indiceCpf}`);
+            }
+
+            if (/^\d+$/.test(buscaLimpa)) {
+
+                valores.push(Number(buscaLimpa));
+
+                const indiceId = valores.length;
+
+                condicoesBusca.push(`s.id = $${indiceId}`);
+            }
+
+            condicoes.push(
+                `(${condicoesBusca.join(" OR ")})`
+            );
+        }
+
+        if (status){
+            valores.push(status);
+
+            condicoes.push(`s.status = $${valores.length}`);
+        }
+
+        if (prioridade) {
+            valores.push(prioridade);
+
+            condicoes.push(`s.prioridade = $${valores.length}`);
+        }
+
+        if (responsavel_id) {
+            valores.push(responsavel_id);
+
+            condicoes.push(`s.responsavel_id = $${valores.length}`);
+        }
+
+        if (tipo_servico_id) {
+            valores.push(tipo_servico_id);
+
+            condicoes.push(`s.tipo_servico_id = $${valores.length}`);
+        }
+
+        let where = "";
+
+        if (condicoes.length > 0) {
+            where = `
+                WHERE ${condicoes.join(" AND ")}
+            `;
+        }
+        const valoresListagem = [...valores];
+
+        valoresListagem.push(limite);
+
+        const indiceLimite = valoresListagem.length;
+
+        valoresListagem.push(offset);
+
+        const indiceOffset = valoresListagem.length;
+
+        const queryListagem = `
             SELECT
                 s.*,
                 r.nome AS responsavel,
@@ -16,14 +161,49 @@ async function listarSolicitacoes(req, res) {
                 ON s.responsavel_id = r.id
             JOIN tipos_servico ts
                 ON s.tipo_servico_id = ts.id
+            ${where}
             ORDER BY s.id
-            `
+            LIMIT $${indiceLimite}
+            OFFSET $${indiceOffset}
+        `;
+
+        const queryTotal = `
+            SELECT COUNT(*) AS total
+            FROM solicitacoes s
+            ${where}
+        `;
+
+        const resultado = await pool.query(
+            queryListagem,
+            valoresListagem
         );
 
+        const resultadoTotal = await pool.query(
+            queryTotal,
+            valores
+        );
 
-        return res.status(200).json(resultado.rows);
+        const total = Number(
+            resultadoTotal.rows[0].total
+        );
 
-    } catch (error) {
+        const totalPaginas = Math.ceil(
+            total / limite
+        );
+
+        return res.status(200).json({
+            solicitacoes: resultado.rows,
+            pagina,
+            limite,
+            total,
+            totalPaginas
+        });
+
+    }catch(error){
+        console.error(
+            "ERRO AO LISTAR SOLICITAÇÕES:",
+            error
+        );
 
         return res.status(500).json({
             mensagem: "Erro ao listar solicitações"
@@ -34,7 +214,6 @@ async function listarSolicitacoes(req, res) {
 async function criarSolicitacao(req, res) {
 
     try {
-
         const {
             nome,
             cpf,

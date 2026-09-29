@@ -8,21 +8,108 @@
 </head>
 <body>
    <section class="card">
-        <h2>Lista de Solicitações</h2>
 
-        <button id="listar">Listar / Atualizar listagem</button>
-        <button type="button" id="excluir-selecionadas" hidden>
+    <h2>Lista de Solicitações</h2>
+
+    <div class="acoes-listagem">
+        <button id="listar">
+            Listar / Atualizar listagem
+        </button>
+
+        <button
+            type="button"
+            id="excluir-selecionadas"
+            hidden
+        >
             Excluir selecionadas
         </button>
-        <input type="text" id="pesquisa" placeholder="Pesquisar por nome...">
-        <button type="button" id="imprimir-selecionadas">
+
+        <button
+            type="button"
+            id="imprimir-selecionadas"
+        >
             Imprimir selecionadas
         </button>
-        <div id="lista-container">
-            <p>Nenhuma solicitação carregada.</p>
-        </div>
-        
-    </section>
+    </div>
+    <div class="pesquisa-listagem">
+        <input
+            type="text"
+            id="pesquisa"
+            placeholder="Pesquisar por nome, CPF ou ID..."
+        >
+    </div>
+
+    <div class="filtros-listagem">
+        <select id="filtro-status">
+
+            <option value="">
+                Todos os status
+            </option>
+
+            <option value="ABERTA">
+                Aberta
+            </option>
+
+            <option value="EM_ANDAMENTO">
+                Em andamento
+            </option>
+
+            <option value="CONCLUIDA">
+                Concluída
+            </option>
+
+            <option value="CANCELADA">
+                Cancelada
+            </option>
+
+        </select>
+        <select id="filtro-prioridade">
+
+            <option value="">
+                Todas as prioridades
+            </option>
+
+            <option value="BAIXO">
+                Baixa
+            </option>
+
+            <option value="MEDIO">
+                Média
+            </option>
+
+            <option value="ALTO">
+                Alta
+            </option>
+
+        </select>
+        <select id="filtro-responsavel">
+
+            <option value="">
+                Todos os responsáveis
+            </option>
+
+        </select>
+        <select id="filtro-tipo-servico">
+
+            <option value="">
+                Todos os tipos de serviço
+            </option>
+
+        </select>
+
+        <button
+            type="button"
+            id="limpar-filtros"
+        >
+            Limpar filtros
+        </button>
+    </div>
+
+    <div id="lista-container">
+        <p>
+            Nenhuma solicitação carregada.
+        </p>
+    </div>
     
     <div id="modal-anexos" class="modal-anexos">
 
