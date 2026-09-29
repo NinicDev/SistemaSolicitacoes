@@ -26,14 +26,6 @@ async function enviarEmail({ to, subject, text }) {
     });
 
     if (error) {
-    console.error("ERRO DO RESEND:", error);
-
-    throw new Error(
-        "Não foi possível enviar o e-mail."
-    );
-}
-
-    if (error) {
         throw new Error(
             "Não foi possível enviar o e-mail."
         );
