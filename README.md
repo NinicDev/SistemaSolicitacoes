@@ -1,56 +1,69 @@
 # Sistema de Solicitações
 
-Sistema web para cadastro, gerenciamento e acompanhamento de solicitações de serviço, desenvolvido com **Node.js, Express, PostgreSQL e JavaScript**.
+Sistema web completo para **cadastro, gerenciamento e acompanhamento de solicitações de serviço**, desenvolvido com **Node.js, Express, PostgreSQL, HTML, CSS e JavaScript**.
 
-O projeto possui autenticação de usuários, verificação de e-mail, recuperação de senha, controle de acesso por níveis, gerenciamento de responsáveis, upload protegido de anexos, geração de PDFs e uma área administrativa.
+O projeto foi construído com foco em prática de desenvolvimento **full stack**, cobrindo autenticação, autorização, banco de dados relacional, uploads protegidos, geração de PDFs, envio de e-mails, regras de negócio, filtros, paginação e deploy em produção.
 
-O objetivo foi desenvolver uma aplicação completa trabalhando conceitos de **frontend, backend, banco de dados relacional, autenticação, autorização, segurança, uploads e regras de negócio**.
+## 🌐 Demonstração online
+
+**Aplicação:** https://www.sistemasolicitacoes.com.br
+
+> O sistema está publicado em produção com domínio próprio, HTTPS e envio de e-mails transacionais pelo domínio `@sistemasolicitacoes.com.br`.
 
 ---
 
-## 📋 Funcionalidades
+## ✨ Principais funcionalidades
 
-### Autenticação e usuários
+### 🔐 Autenticação e usuários
 
 - Cadastro de usuários
 - Login com JWT
 - Logout com invalidação de token
-- Verificação de e-mail através de código
+- Verificação de e-mail por código de 6 dígitos
 - Reenvio de código de verificação
 - Recuperação de senha por e-mail
 - Redefinição de senha
 - Controle de acesso baseado em níveis
 
-### Solicitações
+### 📝 Solicitações
 
 - Cadastro de solicitações
-- Listagem de solicitações
 - Visualização individual
 - Edição de solicitações
-- Exclusão de solicitações
-- Filtros de pesquisa
+- Exclusão individual
+- Exclusão em lote
 - Prioridades
 - Controle de status
 - Associação com responsáveis
 - Associação com tipos de serviço
 - Busca automática de endereço através do CEP
+- Busca por **nome, CPF e ID**
+- Filtros por:
+  - status;
+  - prioridade;
+  - responsável;
+  - tipo de serviço.
+- Combinação simultânea de filtros
+- Paginação realizada no backend
 
-### Anexos
+### 🖼️ Anexos
 
 - Upload de múltiplas imagens
 - Visualização de miniaturas
 - Visualização ampliada em modal
 - Remoção de anexos
-- Proteção dos arquivos através de autenticação
-- Limite e validação dos formatos enviados
+- Proteção dos arquivos por autenticação
+- Validação de formato e tamanho dos arquivos
+- Limpeza dos arquivos físicos relacionados ao excluir anexos ou solicitações
 
-### PDFs
+### 📄 PDFs
 
 - Geração de PDF individual
 - Geração de PDF em lote
 - Seleção de múltiplas solicitações para impressão
+- Controle automático de quebra de página para descrições maiores
 
-### Administração
+### 👑 Administração
 
 - Listagem de usuários
 - Alteração de nível de acesso
@@ -61,13 +74,13 @@ O objetivo foi desenvolver uma aplicação completa trabalhando conceitos de **f
 
 ---
 
-# 🔐 Níveis de acesso
+## 🔐 Níveis de acesso
 
 O sistema possui três níveis de acesso:
 
 | Nível | Permissões |
 | --- | --- |
-| **ADMIN** | Possui acesso completo ao sistema, incluindo gerenciamento de usuários, responsáveis, solicitações e níveis de acesso |
+| **ADMIN** | Acesso completo ao sistema, incluindo gerenciamento de usuários, responsáveis, solicitações e níveis de acesso |
 | **OPERADOR** | Pode criar e editar solicitações, gerenciar anexos, visualizar solicitações e gerar PDFs |
 | **VISUALIZADOR** | Possui acesso somente para consulta de solicitações, anexos e documentos |
 
@@ -77,27 +90,25 @@ Todo novo usuário é criado inicialmente como:
 VISUALIZADOR
 ```
 
-Quando um usuário é cadastrado como responsável, o sistema altera automaticamente seu nível para:
+Quando um usuário é cadastrado como responsável, seu nível é alterado automaticamente para:
 
 ```text
 OPERADOR
 ```
 
-Quando esse responsável é desativado, seu nível volta para:
+Ao desativar esse responsável, o nível volta para:
 
 ```text
 VISUALIZADOR
 ```
 
-Um responsável ativo deve obrigatoriamente possuir nível `OPERADOR`.
-
-As permissões são verificadas no **backend**, através de middlewares de autenticação e autorização. Dessa forma, esconder um botão no frontend não é utilizado como mecanismo de segurança.
+As permissões são verificadas no **backend**, através de middlewares de autenticação e autorização. Ocultar botões no frontend não é utilizado como mecanismo de segurança.
 
 ---
 
-# 🛠 Tecnologias utilizadas
+## 🛠️ Tecnologias utilizadas
 
-## Backend
+### Backend
 
 - Node.js
 - Express
@@ -106,19 +117,31 @@ As permissões são verificadas no **backend**, através de middlewares de auten
 - JSON Web Token (`jsonwebtoken`)
 - bcrypt
 - Multer
-- Nodemailer
 - PDFKit
+- Resend
 - dotenv
 - CORS
 
-## Frontend
+### Frontend
 
 - HTML5
 - CSS3
 - JavaScript
 - Fetch API
 
-## Ferramentas utilizadas durante o desenvolvimento
+### Infraestrutura e serviços
+
+- Railway
+- PostgreSQL
+- Resend
+- Registro.br
+- Domínio próprio
+- HTTPS
+- DKIM
+- SPF
+- DMARC
+
+### Ferramentas utilizadas durante o desenvolvimento
 
 - Visual Studio Code
 - PostgreSQL
@@ -128,7 +151,65 @@ As permissões são verificadas no **backend**, através de middlewares de auten
 
 ---
 
-# 📁 Estrutura do projeto
+# 📸 Screenshots
+
+## Autenticação
+
+### Login
+
+![Login](docs/screenshots/01-Login.png)
+
+### Cadastro
+
+![Cadastro](docs/screenshots/02-Cadastro.png)
+
+### Verificação de e-mail
+
+![Verificação de e-mail](docs/screenshots/03-VerificacaoEmail.png)
+
+---
+
+## Fluxo principal
+
+### Painel inicial
+
+![Painel inicial](docs/screenshots/04-TelaInicial.png)
+
+### Nova solicitação
+
+![Nova solicitação](docs/screenshots/05-NovaSolicitacao.png)
+
+### Listagem com busca, filtros e paginação
+
+![Lista de solicitações](docs/screenshots/06-ListagemSolicitacoes.png)
+
+### Visualização e edição de solicitação
+
+![Solicitação preenchida](docs/screenshots/07-SolicitacaoPreenchida.png)
+
+---
+
+## Recursos adicionais
+
+### Visualização de anexos
+
+![Anexos da solicitação](docs/screenshots/08-AnexosSolicitacao.png)
+
+### PDF gerado
+
+![PDF da solicitação](docs/screenshots/09-PDFsolicitacao.png)
+
+### Área administrativa
+
+![Administração](docs/screenshots/10-TelaAdmin.png)
+
+### Recuperação de senha por e-mail
+
+![E-mail de recuperação](docs/screenshots/12-EmailRecuperacao.png)
+
+---
+
+## 📁 Estrutura do projeto
 
 ```text
 SistemaSolicitacoes/
@@ -141,32 +222,8 @@ SistemaSolicitacoes/
 │   └── seed.sql
 │
 ├── public/
-│   │
 │   ├── css/
-│   │   ├── administracao.css
-│   │   ├── anexos.css
-│   │   ├── base.css
-│   │   ├── inicio.css
-│   │   ├── login.css
-│   │   ├── nova-solicitacao.css
-│   │   ├── solicitacao.css
-│   │   └── solicitacoes.css
-│   │
 │   ├── js/
-│   │   ├── administracao.js
-│   │   ├── anexos.js
-│   │   ├── cadastro.js
-│   │   ├── formatadores.js
-│   │   ├── inicio.js
-│   │   ├── login.js
-│   │   ├── nova-solicitacao.js
-│   │   ├── redefinir-senha.js
-│   │   ├── solicitacao.js
-│   │   ├── solicitacoes.js
-│   │   ├── validacoes.js
-│   │   ├── verificar-email.js
-│   │   └── verificar-email-senha.js
-│   │
 │   ├── administracao.html
 │   ├── cadastro.html
 │   ├── inicio.html
@@ -179,7 +236,6 @@ SistemaSolicitacoes/
 │   └── verificar-email-senha.html
 │
 ├── src/
-│   │
 │   ├── controllers/
 │   ├── middlewares/
 │   ├── routes/
@@ -199,11 +255,11 @@ SistemaSolicitacoes/
 
 ---
 
-# 🗄 Banco de dados
+## 🗄️ Banco de dados
 
 O projeto utiliza **PostgreSQL**.
 
-As principais tabelas são:
+Principais tabelas:
 
 ```text
 usuarios
@@ -215,20 +271,19 @@ codigos_verificacao
 tokens_invalidados
 ```
 
-Também são utilizadas as views:
+Views utilizadas:
 
 ```text
 view_email_verificacao
 view_solicitacoes_registro
 ```
 
-O relacionamento principal do sistema pode ser representado de forma simplificada como:
+Relacionamento principal simplificado:
 
 ```text
 usuarios
    │
    │ 1
-   │
    ▼
 responsaveis
    │
@@ -247,223 +302,7 @@ Todo responsável possui um usuário associado, e um responsável pode estar ass
 
 ---
 
-# 📦 Pré-requisitos
-
-Para executar o projeto localmente é necessário possuir:
-
-- Node.js
-- npm
-- PostgreSQL
-
-O projeto foi desenvolvido utilizando:
-
-```text
-Node.js 24
-PostgreSQL 18
-```
-
-Versões diferentes e compatíveis também podem funcionar.
-
----
-
-# 🚀 Instalação
-
-Clone o repositório:
-
-```bash
-git clone https://github.com/NinicDev/SistemaSolicitacoes.git
-```
-
-Entre na pasta:
-
-```bash
-cd SistemaSolicitacoes
-```
-
-Instale as dependências:
-
-```bash
-npm install
-```
-
----
-
-# 🗃 Configuração do PostgreSQL
-
-Primeiro, crie o banco:
-
-```sql
-CREATE DATABASE sistema_solicitacoes;
-```
-
-Depois execute o arquivo responsável por criar toda a estrutura:
-
-```bash
-psql -U postgres -d sistema_solicitacoes -f database/schema.sql
-```
-
-Em seguida execute os dados iniciais:
-
-```bash
-psql -U postgres -d sistema_solicitacoes -f database/seed.sql
-```
-
-O `seed.sql` adiciona os tipos de serviço iniciais:
-
-```text
-Instalação
-Manutenção
-Vistoria
-```
-
-O arquivo `schema.sql` contém:
-
-- tabelas;
-- sequences;
-- chaves primárias;
-- chaves estrangeiras;
-- constraints;
-- valores padrão;
-- views;
-- relacionamentos.
-
-Nenhum usuário, senha, solicitação ou dado pessoal utilizado durante o desenvolvimento é distribuído junto ao banco.
-
----
-
-# ⚙️ Variáveis de ambiente
-
-Na raiz do projeto existe:
-
-```text
-.env.example
-```
-
-Crie uma cópia chamada:
-
-```text
-.env
-```
-
-E configure suas informações:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=sua_senha_do_postgresql
-DB_NAME=sistema_solicitacoes
-
-JWT_SECRET=seu_segredo_jwt
-
-EMAIL_HOST=servidor_smtp
-EMAIL_PORT=porta_smtp
-EMAIL_USER=seu_email
-EMAIL_PASS=sua_senha_ou_app_password
-EMAIL_FROM=seu_email
-
-PORT=3000
-```
-
-O arquivo `.env` contém informações privadas e **não deve ser enviado ao GitHub**.
-
-Ele já está configurado no `.gitignore`.
-
----
-
-# ✉️ Configuração de e-mail
-
-O envio de e-mails é utilizado para:
-
-- verificação de conta;
-- reenvio de código;
-- recuperação de senha.
-
-É necessário configurar um servidor SMTP através das variáveis:
-
-```env
-EMAIL_HOST=
-EMAIL_PORT=
-EMAIL_USER=
-EMAIL_PASS=
-EMAIL_FROM=
-```
-
-Dependendo do provedor de e-mail utilizado, pode ser necessário gerar uma **senha de aplicativo**.
-
----
-
-# 👑 Criando o primeiro administrador
-
-Todos os novos usuários são cadastrados inicialmente como:
-
-```text
-VISUALIZADOR
-```
-
-Para criar o primeiro administrador:
-
-1. Cadastre um usuário normalmente.
-2. Verifique o e-mail.
-3. Execute no PostgreSQL:
-
-```sql
-UPDATE usuarios
-SET nivel_acesso = 'ADMIN'
-WHERE email = 'seu@email.com';
-```
-
-Depois disso, ao entrar novamente no sistema, esse usuário terá acesso à área administrativa.
-
-Os próximos usuários poderão ser gerenciados através da própria interface.
-
----
-
-# ▶️ Executando o projeto
-
-Para iniciar normalmente:
-
-```bash
-npm start
-```
-
-Durante o desenvolvimento, utilizando Nodemon:
-
-```bash
-npm run dev
-```
-
-Por padrão, o backend utiliza:
-
-```text
-http://localhost:3000
-```
-
-Caso a variável `PORT` seja fornecida pelo ambiente, ela será utilizada automaticamente.
-
----
-
-# 🌐 Frontend
-
-O frontend está localizado na pasta:
-
-```text
-public/
-```
-
-A página de entrada é:
-
-```text
-public/login.html
-```
-
-Durante o desenvolvimento local, os arquivos podem ser servidos através de um servidor HTTP local, como o **Live Server** do Visual Studio Code.
-
-O frontend se comunica com a API utilizando a Fetch API.
-
----
-
-# 🔑 Autenticação
+## 🔑 Autenticação
 
 Após o login, o backend gera um token JWT.
 
@@ -481,11 +320,11 @@ O middleware de autenticação verifica:
 - invalidação por logout;
 - existência atual do usuário.
 
-O nível de acesso é consultado no banco para que uma alteração de permissão tenha efeito sem depender da emissão de um novo JWT.
+O nível de acesso é consultado no banco para que alterações de permissão tenham efeito sem depender da emissão de um novo JWT.
 
 ---
 
-# 🛡 Autorização
+## 🛡️ Autorização
 
 A autenticação responde:
 
@@ -495,22 +334,7 @@ A autorização responde:
 
 > Esse usuário possui permissão para executar esta operação?
 
-As rotas utilizam níveis como:
-
-```javascript
-autorizarNiveis("ADMIN")
-```
-
-ou:
-
-```javascript
-autorizarNiveis(
-    "ADMIN",
-    "OPERADOR"
-)
-```
-
-Por exemplo:
+Exemplos de níveis utilizados nas rotas:
 
 ```text
 GET /solicitacoes
@@ -530,11 +354,11 @@ DELETE /solicitacoes/:id
 → ADMIN
 ```
 
-Dessa forma, as permissões continuam protegidas mesmo caso alguém tente realizar uma requisição diretamente através de ferramentas como Postman.
+Dessa forma, as permissões continuam protegidas mesmo caso alguém tente realizar requisições diretamente através de ferramentas como Postman.
 
 ---
 
-# 👤 Responsáveis
+## 👤 Responsáveis
 
 Responsáveis são usuários do sistema vinculados à tabela `responsaveis`.
 
@@ -542,15 +366,15 @@ Quando um administrador cadastra um usuário como responsável:
 
 ```text
 VISUALIZADOR
-        ↓
-    OPERADOR
+     ↓
+ OPERADOR
 ```
 
 Ao desativar esse responsável:
 
 ```text
 OPERADOR
-     ↓
+   ↓
 VISUALIZADOR
 ```
 
@@ -558,80 +382,21 @@ Ao reativá-lo:
 
 ```text
 VISUALIZADOR
-        ↓
-    OPERADOR
+     ↓
+ OPERADOR
 ```
 
-Essas alterações são realizadas utilizando transações para evitar inconsistências entre as tabelas `usuarios` e `responsaveis`.
+Essas alterações utilizam transações para evitar inconsistências entre as tabelas `usuarios` e `responsaveis`.
 
-Um responsável inativo deixa de aparecer para novas solicitações, porém continua associado às solicitações antigas para preservar o histórico.
+Um responsável inativo deixa de aparecer para novas solicitações, mas continua associado às solicitações antigas para preservar o histórico.
 
 ---
 
-# 📝 Solicitações
-
-Uma solicitação pode possuir:
-
-- Nome
-- CPF
-- RG
-- Telefone
-- Rua
-- Número
-- Bairro
-- Cidade
-- UF
-- CEP
-- Complemento
-- Responsável
-- Tipo de serviço
-- Prioridade
-- Status
-- Descrição
-- Anexos
-
----
-
-## Prioridades
-
-As prioridades disponíveis são:
-
-```text
-BAIXO
-MEDIO
-ALTO
-```
-
-O banco também possui uma constraint para impedir valores inválidos.
-
----
-
-## Status
-
-Os status disponíveis são:
-
-```text
-ABERTA
-EM_ANDAMENTO
-CONCLUIDA
-CANCELADA
-```
-
-Toda nova solicitação é criada inicialmente como:
-
-```text
-ABERTA
-```
-
-O banco também possui uma constraint para impedir valores de status inválidos.
-
----
-
-# 📍 Consulta de CEP
+## 📍 Consulta de CEP
 
 O formulário de solicitação possui integração para consulta de CEP.
 
-Ao informar um CEP válido, o sistema pode preencher automaticamente informações como:
+Ao informar um CEP válido, o sistema pode preencher automaticamente:
 
 - rua;
 - bairro;
@@ -640,35 +405,56 @@ Ao informar um CEP válido, o sistema pode preencher automaticamente informaçõ
 
 ---
 
-# 🖼 Anexos
+## 🔎 Busca, filtros e paginação
 
-Solicitações podem possuir imagens anexadas.
+A listagem de solicitações possui:
 
-O upload utiliza **Multer**.
+- busca por nome;
+- busca por CPF;
+- busca por ID;
+- filtro por status;
+- filtro por prioridade;
+- filtro por responsável;
+- filtro por tipo de serviço;
+- combinação simultânea dos filtros;
+- paginação no backend.
 
-São aplicadas validações de formato e tamanho antes do armazenamento.
+Exemplo de requisição:
 
-Os arquivos são mantidos na pasta:
-
-```text
-uploads/
+```http
+GET /solicitacoes?busca=Nicolas&status=ABERTA&prioridade=ALTO&page=1&limit=20
 ```
+
+A paginação evita carregar todos os registros de uma vez e permite que o backend retorne informações como:
+
+```json
+{
+  "pagina": 1,
+  "limite": 20,
+  "total": 53,
+  "totalPaginas": 3
+}
+```
+
+---
+
+## 🖼️ Anexos
+
+As solicitações podem possuir imagens anexadas.
+
+O upload utiliza **Multer** e aplica validações de formato e tamanho.
 
 Os arquivos enviados durante a execução não são versionados pelo Git.
 
-Além disso, a pasta de uploads não é exposta diretamente como diretório público.
-
-A leitura dos anexos passa por uma rota autenticada, impedindo acesso direto sem autorização.
+A pasta de uploads não é exposta diretamente como diretório público. A leitura dos anexos passa por rota autenticada, impedindo acesso direto sem autorização.
 
 Ao excluir um anexo ou uma solicitação, o sistema também realiza a limpeza dos arquivos físicos relacionados.
 
 ---
 
-# 📄 PDFs
+## 📄 PDFs
 
 O sistema utiliza **PDFKit** para gerar documentos das solicitações.
-
-Existem duas modalidades:
 
 ### PDF individual
 
@@ -678,52 +464,67 @@ Gera um documento contendo os dados completos de uma única solicitação.
 
 Permite selecionar várias solicitações na listagem e gerar um único documento contendo todas elas.
 
-O sistema também controla automaticamente quebra de página para descrições maiores.
+O sistema também controla automaticamente quebras de página para descrições maiores.
 
 ---
 
-# 🔎 Filtros
+## ✉️ E-mails transacionais
 
-A tela de listagem permite localizar e consultar solicitações de forma mais prática.
+O sistema utiliza **Resend** para envio de e-mails.
 
-Os registros exibem informações como:
+Os e-mails são usados em:
 
-- ID;
-- nome;
-- tipo de serviço;
-- responsável;
-- status;
-- prioridade.
+- verificação de conta;
+- reenvio de código;
+- recuperação de senha.
 
-A interface também diferencia visualmente status e prioridades.
+Em produção, os e-mails são enviados através do domínio:
 
----
+```text
+@sistemasolicitacoes.com.br
+```
 
-# 🎨 Interface
+Exemplo de remetente:
 
-O frontend possui uma identidade visual padronizada entre as diferentes telas do sistema.
+```text
+Sistema de Solicitações <no-reply@sistemasolicitacoes.com.br>
+```
 
-Entre elas:
+O domínio foi autenticado utilizando:
 
-- login;
-- cadastro;
-- verificação de e-mail;
-- recuperação de senha;
-- página inicial;
-- cadastro de solicitação;
-- listagem;
-- detalhes da solicitação;
-- administração.
-
-A interface também possui adaptação para diferentes tamanhos de tela.
+- DKIM;
+- SPF;
+- DMARC.
 
 ---
 
-# 🔒 Segurança
+## ☁️ Deploy e produção
+
+A aplicação está publicada utilizando **Railway**.
+
+Principais elementos da infraestrutura:
+
+- aplicação Node.js em produção;
+- banco PostgreSQL;
+- domínio próprio;
+- HTTPS;
+- envio de e-mails por Resend;
+- autenticação DNS do domínio;
+- armazenamento dos anexos durante a execução da aplicação.
+
+### URL pública
+
+```text
+https://www.sistemasolicitacoes.com.br
+```
+
+---
+
+## 🔒 Segurança
 
 Algumas medidas aplicadas no projeto:
 
-- senhas armazenadas através de hash com bcrypt;
+- senhas armazenadas com hash usando bcrypt;
 - autenticação JWT;
 - expiração de tokens;
 - invalidação de JWT durante logout;
@@ -740,35 +541,64 @@ Algumas medidas aplicadas no projeto:
 
 ---
 
-# 📜 Scripts disponíveis
+# 🚀 Executando localmente
 
-## Produção / execução normal
+## Pré-requisitos
 
-```bash
-npm start
+- Node.js
+- npm
+- PostgreSQL
+
+O projeto foi desenvolvido utilizando:
+
+```text
+Node.js 24
+PostgreSQL 18
 ```
 
-## Desenvolvimento
-
-```bash
-npm run dev
-```
-
-O modo de desenvolvimento utiliza Nodemon para reiniciar o servidor automaticamente após alterações.
+Versões diferentes e compatíveis também podem funcionar.
 
 ---
 
-# 🌱 Dados iniciais
+## 1. Clonar o repositório
 
-O arquivo:
-
-```text
-database/seed.sql
+```bash
+git clone https://github.com/NinicDev/SistemaSolicitacoes.git
 ```
 
-possui somente informações necessárias para iniciar o projeto.
+```bash
+cd SistemaSolicitacoes
+```
 
-Atualmente são criados os seguintes tipos de serviço:
+---
+
+## 2. Instalar as dependências
+
+```bash
+npm install
+```
+
+---
+
+## 3. Criar o banco
+
+```sql
+CREATE DATABASE sistema_solicitacoes;
+```
+
+Depois execute:
+
+```bash
+psql -U postgres -d sistema_solicitacoes -f database/schema.sql
+```
+
+E em seguida:
+
+```bash
+psql -U postgres -d sistema_solicitacoes -f database/seed.sql
+```
+
+O `seed.sql` adiciona os tipos de serviço iniciais:
 
 ```text
 Instalação
@@ -776,13 +606,94 @@ Manutenção
 Vistoria
 ```
 
-O seed pode ser executado novamente sem duplicar esses registros.
+Nenhum usuário, senha, solicitação ou dado pessoal utilizado durante o desenvolvimento é distribuído junto ao banco.
 
 ---
 
-# 🧪 Testes
+## 4. Configurar variáveis de ambiente
 
-Durante o desenvolvimento, as rotas da API foram testadas utilizando Postman.
+Crie um arquivo:
+
+```text
+.env
+```
+
+com base no `.env.example`.
+
+Exemplo:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=sua_senha_do_postgresql
+DB_NAME=sistema_solicitacoes
+
+JWT_SECRET=seu_segredo_jwt
+
+RESEND_API_KEY=sua_chave_do_resend
+EMAIL_REMETENTE="Sistema de Solicitações <no-reply@seudominio.com.br>"
+
+PORT=3000
+```
+
+O `.env` contém informações privadas e **não deve ser enviado ao GitHub**.
+
+---
+
+## 5. Criar o primeiro administrador
+
+Todos os novos usuários são cadastrados inicialmente como:
+
+```text
+VISUALIZADOR
+```
+
+Para criar o primeiro administrador:
+
+1. Cadastre um usuário normalmente.
+2. Verifique o e-mail.
+3. Execute no PostgreSQL:
+
+```sql
+UPDATE usuarios
+SET nivel_acesso = 'ADMIN'
+WHERE email = 'seu@email.com';
+```
+
+Depois disso, entre novamente no sistema.
+
+Os próximos usuários poderão ser gerenciados através da própria interface administrativa.
+
+---
+
+## 6. Executar o projeto
+
+Produção / execução normal:
+
+```bash
+npm start
+```
+
+Desenvolvimento com Nodemon:
+
+```bash
+npm run dev
+```
+
+Por padrão, o backend utiliza:
+
+```text
+http://localhost:3000
+```
+
+Caso a variável `PORT` seja fornecida pelo ambiente, ela será utilizada automaticamente.
+
+---
+
+## 🧪 Testes realizados
+
+Durante o desenvolvimento, as rotas da API foram testadas utilizando Postman e também através dos fluxos completos da interface.
 
 Foram testados cenários como:
 
@@ -791,9 +702,11 @@ Foram testados cenários como:
 - token expirado;
 - permissões entre ADMIN, OPERADOR e VISUALIZADOR;
 - criação e edição de solicitações;
-- exclusão;
+- exclusão individual e em lote;
 - upload e exclusão de anexos;
 - geração de PDFs;
+- filtros;
+- paginação;
 - alteração do nível de acesso;
 - ativação e desativação de responsáveis;
 - códigos de verificação;
@@ -802,53 +715,25 @@ Foram testados cenários como:
 
 ---
 
-# 🌍 Demonstração online
+## 🎯 Objetivo do projeto
 
-Uma versão hospedada da aplicação será adicionada posteriormente.
+Este projeto foi desenvolvido para consolidar conhecimentos de desenvolvimento web full stack, trabalhando de forma integrada:
 
-```text
-Em breve
-```
-
----
-
-# 📸 Screenshots
-
-Screenshots da aplicação serão adicionadas após a publicação da versão online.
-
-<!--
-Exemplo futuro:
-
-## Login
-
-![Login](docs/screenshots/login.png)
-
-## Página inicial
-
-![Início](docs/screenshots/inicio.png)
-
-## Solicitações
-
-![Solicitações](docs/screenshots/solicitacoes.png)
-
-## Administração
-
-![Administração](docs/screenshots/administracao.png)
--->
+- frontend;
+- backend;
+- APIs REST;
+- banco de dados relacional;
+- autenticação;
+- autorização;
+- segurança;
+- uploads;
+- geração de documentos;
+- serviços externos;
+- deploy em produção.
 
 ---
 
-# 📌 Próximas etapas
-
-- Publicação da aplicação
-- Hospedagem do banco PostgreSQL
-- Configuração de armazenamento persistente para anexos
-- Inclusão de screenshots no README
-- Inclusão do link da demonstração online
-
----
-
-# 👨‍💻 Autor
+## 👨‍💻 Autor
 
 Desenvolvido por **Nicolas Andrade**.
 
