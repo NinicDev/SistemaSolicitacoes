@@ -1,5 +1,17 @@
 const { Resend } = require("resend");
 
+if (!process.env.RESEND_API_KEY) {
+    throw new Error(
+        "RESEND_API_KEY não configurada."
+    );
+}
+
+if (!process.env.EMAIL_REMETENTE) {
+    throw new Error(
+        "EMAIL_REMETENTE não configurado."
+    );
+}
+
 const resend = new Resend(
     process.env.RESEND_API_KEY
 );
@@ -7,11 +19,19 @@ const resend = new Resend(
 async function enviarEmail({ to, subject, text }) {
 
     const { error } = await resend.emails.send({
-        from: "Sistema de Solicitações <onboarding@resend.dev>",
+        from: process.env.EMAIL_REMETENTE,
         to,
         subject,
         text
     });
+
+    if (error) {
+    console.error("ERRO DO RESEND:", error);
+
+    throw new Error(
+        "Não foi possível enviar o e-mail."
+    );
+}
 
     if (error) {
         throw new Error(
